@@ -76,13 +76,17 @@ Four distinct macroeconomic regimes are present in this window:
 
 | Metric | Value | Interpretation |
 |--------|-------|----------------|
-| Discriminative AUC | [AUC: X.XX] | AUC ≈ 0.5 = indistinguishable from real; AUC ≈ 1.0 = easily separable |
-| TROR MAE (baseline) | [X.XXXXXX] | Upper bound: model trained and tested on real data |
-| TSTR MAE | [X.XXXXXX] | Model trained on synthetic, tested on real |
-| TSTR / TROR ratio | [X.XXXX] | Closer to 1.0 = synthetic data as useful as real |
-| Mean \|Δ Correlation\| | [X.XXXX] | Mean absolute error in cross-asset correlations |
+| Discriminative AUC | 0.8657 | A simple GRU classifier separates real from synthetic with high confidence — the synthetic data is visually plausible but statistically detectable |
+| TROR MAE (baseline) | 0.02762 | Upper bound: model trained and tested on real data |
+| TSTR MAE | 0.01349 | Model trained on synthetic, tested on real |
+| TSTR / TROR ratio | 0.49 | Below 1.0, but misleading — see note below |
+| Mean \|Δ Correlation\| | 0.0560 | Moderate error in cross-asset correlations; broad structure preserved but relationships are imprecise |
 
-*Values are populated after running the full training pipeline.*
+**Honest assessment:** The results are mixed. The discriminative AUC of 0.87 indicates that the synthetic data is readily distinguishable from real data by even a shallow classifier — a clear sign that TimeGAN has not fully reproduced the statistical texture of the original series. The correlation structure is partially preserved (mean error of 0.056 on a [−1, 1] scale), which suggests the model captured some cross-asset relationships but not with high fidelity.
+
+The TSTR/TROR ratio of 0.49 is not a positive result despite appearing below 1.0. A ratio well below 1.0 reflects that the synthetic data is *smoother and more predictable* than real financial data — the Generator has learned a simplified version of the distribution that lacks the volatility clustering, fat tails, and regime shifts that make real returns hard to forecast. Training a model on this synthetic data and testing it on real data yields artificially low error because the synthetic test targets are easier, not because the synthetic training data is richer.
+
+This is a known limitation of TimeGAN on financial data at this scale (3,700 windows, 6 assets, 10k training steps). The project is best understood as a working implementation of the architecture rather than a production-ready data augmentation tool.
 
 ---
 
@@ -162,3 +166,4 @@ All other dependencies are pre-installed in the Colab environment.
 - Yoon, J., Jarrett, D., & van der Schaar, M. (2019). **Time-series Generative Adversarial Networks.** *Advances in Neural Information Processing Systems (NeurIPS 2019)*. https://arxiv.org/abs/2005.00139
 
 - Jansen, S. (2020). **Machine Learning for Algorithmic Trading** (2nd ed.), Chapter 21: Generative Adversarial Networks. Packt Publishing. https://github.com/stefan-jansen/machine-learning-for-trading
+
