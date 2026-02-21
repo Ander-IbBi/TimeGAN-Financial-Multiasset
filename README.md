@@ -152,12 +152,14 @@ statsmodels
 scipy
 yfinance
 ```
+---
+## Future Work
 
-Install in Colab:
-```bash
-pip install yfinance statsmodels -q
-```
-All other dependencies are pre-installed in the Colab environment.
+- **Increase joint training steps to 50k–100k** — the most likely cause of the high discriminative AUC (0.87) is insufficient training in Phase 3. This is the lowest-effort, highest-potential-impact change.
+- **Replace BCE with Wasserstein loss + gradient penalty (WGAN-GP)** — GAN training on financial data is notoriously unstable; Wasserstein loss provides more informative gradients throughout joint training and reduces the risk of the discriminator dominating too early.
+- **Conditional generation on regime labels** — extend the Generator to accept a regime embedding as an additional input, enabling on-demand generation of regime-specific sequences (e.g. "COVID crash style" vs "bull market style"). The four regimes are already identified in the EDA notebook.
+- **Work in log-return space instead of normalised prices** — log returns are stationary, which is a property generative models exploit more effectively than the trending, non-stationary price series used here.
+- **Report discriminative and predictive scores as mean ± std over multiple runs** — a single AUC value has unknown variance; averaging over 5+ random initialisations of the evaluation classifiers would make the metrics statistically meaningful.
 
 ---
 
